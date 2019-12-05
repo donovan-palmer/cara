@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
 <launch>
     <arg name="port" default="/dev/ttyACM0"/>
-    <param name="robot_description" command="$(find xacro)/xacro.py $(find cara)/xacro/cara.urdf.xacro" />
+    <param name="robot_description" command="$(find cara)/xacro $(find cara)/xacro/cara.urdf" />
+
+    <!-- Core -->
     <include file="$(find cara)/launch/core.launch"/>
 
     <!-- Move Base -->
@@ -10,6 +12,7 @@
     <!-- Hector SLAM -->
     <include file="$(find cara)/launch/hector_slam.launch"/>
 
-
+    <arg name="rvizconfig" default="$(find cara)/config/config.rviz" />
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" />
 
 </launch>

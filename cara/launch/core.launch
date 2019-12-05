@@ -2,9 +2,9 @@
 <launch>
     <arg name="port" default="/dev/ttyACM0"/>
 
-    <!--Base Controller -->
+    <!--Base Controller
     <node pkg="cara" type="base_controller" name="base_controller" ns="cara"/>
-
+ -->
 
     <!-- RpLidar -->
     <node name="rplidarNode" ns="cara" pkg="rplidar_ros" type="rplidarNode" output="screen">
