@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="port" default="/dev/ttyACM0"/>
+    <param name="robot_description" command="$(find xacro)/xacro.py $(find cara)/xacro/cara.urdf.xacro" />
+    <include file="$(find cara)/launch/core.launch"/>
+
+    <!-- Move Base -->
+    <include file="$(find cara)/launch/move_base.launch"/>
+
+    <!-- Hector SLAM -->
+    <include file="$(find cara)/launch/hector_slam.launch"/>
+
+
+
+</launch>

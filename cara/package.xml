@@ -53,6 +53,11 @@
   <build_depend>roscpp</build_depend>
   <build_depend>rospy</build_depend>
   <build_depend>std_msgs</build_depend>
+  <build_depend>std_srvs</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>tf</build_depend>
+  <build_depend>nav_msgs</build_depend>
   <build_depend>dynamic_reconfigure</build_depend>
   <build_depend>message_generation</build_depend>
   <build_depend>libpcl-all-dev</build_depend>
@@ -60,12 +65,14 @@
   <build_depend>pcl_ros</build_depend>
  
 
-
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>rospy</build_export_depend>
   <build_export_depend>std_msgs</build_export_depend>
   <build_export_depend>dynamic_reconfigure</build_export_depend>
-
+  
+  <depend>robot_state_publisher</depend>
+  <depend>joint_state_publisher</depend>
+  <depend>move_base</depend>
 
   <exec_depend>roscpp</exec_depend>
   <exec_depend>rospy</exec_depend>
