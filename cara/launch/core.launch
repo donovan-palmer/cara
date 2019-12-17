@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
 <launch>
-    <arg name="port" default="/dev/ttyACM0"/>
 
     <!--Base Controller
     <node pkg="cara" type="base_controller" name="base_controller" ns="cara"/>
@@ -12,18 +11,18 @@
     <node name="rplidarNode" pkg="rplidar_ros" type="rplidarNode" output="screen">
         <param name="serial_port" type="string" value="/dev/ttyUSB0"/>
         <param name="serial_baudrate" type="int" value="115200"/>
-        <param name="frame_id" type="string" value="rplidar_frame"/>
+        <param name="frame_id" type="string" value="base_link"/>
         <param name="inverted" type="bool" value="false"/>
         <param name="angle_compensate" type="bool" value="true"/>
     </node>
 
     <node pkg="rtimulib_ros" type="rtimulib_ros" name="rtimulib_node" output="screen">
         <param name="calibration_file_path" value="$(find rtimulib_ros)/config"/>
-        <param name="frame_id" value="map"/> <!-- /map is used for debug in RViz, to be replaced by the imu_link -->
+        <param name="frame_id" value="base_link"/> <!-- /map is used for debug in RViz, to be replaced by the imu_link -->
         <param name="update_rate" value="10"/>
     </node>
 
-    <!-- State Publishers -->
+    <!-- State Publishers 
     <include file="$(find cara)/launch/state_publishers.launch"/>
-
+-->
 </launch>
