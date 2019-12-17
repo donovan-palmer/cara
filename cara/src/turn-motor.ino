@@ -1,6 +1,6 @@
 #include <LiquidCrystal_I2C.h>
-// Please insert your motor encoder output pulse per rotation
-#define ENCODEROUTPUT 230.436
+
+#define ENCODEROUTPUT 230.436 // motor encoder output pulse per rotation
 #define BUTTON 7
 #define HALLSEN_A 3 // Hall sensor A connected to pin 3 (external interrupt)
 #define HALLSEN_B 6 // Hall sensor A connected to pin 6 (external interrupt)
@@ -26,7 +26,6 @@ void setup()
   pinMode(BUTTON, INPUT_PULLUP); // Set button as input pullup
   pinMode(HALLSEN_A, INPUT_PULLUP); // Set hall sensor A as input pullup
   pinMode(HALLSEN_B, INPUT_PULLUP); // Set hall sensor B as input pullup
-  //  pinMode(BUZZER, OUTPUT); // Set buzzer as output
   pinMode(PWM, OUTPUT); // Set PWM pin as output
   pinMode(DIR, OUTPUT); // Set DIR pin as output
 
@@ -80,29 +79,29 @@ void loop()
     }
 
     if (measureRpm == true &&
-        motorPwm < 250) {
+        motorPwm < 255) {
       motorPwm += 50;
       analogWrite(PWM, motorPwm);
     }
-//    else if (measureRpm == false &&
-//             motorPwm > 0) {
-//      motorPwm -= 25;
-//      analogWrite(PWM, motorPwm);
-//    }
+   else if (measureRpm == false &&
+            motorPwm > 0) {
+     motorPwm -= 25;
+     analogWrite(PWM, motorPwm);
+   }
     // Revolutions per minute (RPM) =
     // (total encoder pulse in 1s / motor encoder output) x 60s
     rpm = (float)(encoderValue * 60 / ENCODEROUTPUT);
-    // Only update display when there have readings
+    
     if (motorPwm > 0 || rpm > 0) {
-//      Serial.print(motorPwm);
-//      Serial.print(encoderValue);
-//      Serial.print('\t');
-//      Serial.print(cycle);
-//      Serial.print('\t');
-//      Serial.print(encoderValue);
-//      Serial.print(" pulse / ");
-//      Serial.print(ENCODEROUTPUT);
-//      Serial.print(" pulse per rotation x 60 seconds = ");
+     Serial.print(motorPwm);
+     Serial.print(encoderValue);
+     Serial.print('\t');
+     Serial.print(cycle);
+     Serial.print('\t');
+     Serial.print(encoderValue);
+     Serial.print(" pulse / ");
+     Serial.print(ENCODEROUTPUT);
+     Serial.print(" pulse per rotation x 60 seconds = ");
       Serial.println(rpm);
       //
     }
