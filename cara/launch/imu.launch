@@ -1,8 +1,7 @@
-<?xml version="1.0"?>
 <launch>
-    <node pkg="rtimulib_ros" type="rtimulib_ros" name="rtimulib_node" output="screen">
-        <param name="calibration_file_path" value="$(find rtimulib_ros)/config"/>
-        <param name="frame_id" value="map"/> <!-- /map is used for debug in RViz, to be replaced by the imu_link -->
-        <param name="update_rate" value="10"/>
+    <node ns="imu" name="imu_node" pkg="imu_bno055" type="bno055_i2c_node" respawn="true" respawn_delay="2">
+        <param name="device" type="string" value="/dev/i2c-1"/>
+        <param name="address" type="int" value="40"/> <!-- 0x28 == 40 is the default for BNO055 -->
+        <param name="frame_id" type="string" value="imu"/>
     </node>
 </launch>

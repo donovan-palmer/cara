@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+    <!--Arduino Romeo -->
+    <include file="$(find cara)/launch/arduino.launch"/>
+    <!--RP LiDAR -->
+    <include file="$(find cara)/launch/rplidar.launch"/>
+    <!--BNO055 imu -->
+    <include file="$(find cara)/launch/imu.launch"/>
+</launch>
