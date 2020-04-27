@@ -1,9 +1,16 @@
 <launch>
-      <param name="robot_description" textfile="$(find cara_description)/urdf/cara.urdf" />
-      <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+	<arg name="gui" default="True" />
 
-      <node pkg="rviz" type="rviz" name="rviz" output="screen"/>
+	<param name="robot_description" command="cat $(find cara_description)/urdf/cara.urdf" />
 
-      <node pkg="rviz" type="rviz" name="rviz" output="screen"/>
+        <group if="$(arg gui)">
+        	<node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" />
+	</group>
+        <group unless="$(arg gui)">
+		<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+	</group>
 
-  </launch>
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+
+	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find cara_description)/src/urdf.rviz" required="true" />
+</launch>
