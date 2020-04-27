@@ -14,13 +14,13 @@ unsigned int noCommLoops = 0;                 //main loop without communication 
 
 double speed_cmd_left2 = 0;
 
-#define ENCA_L 8            //A channel for encoder of left motor
+#define ENCA_L 2            //A channel for encoder of left motor
 #define ENCB_L 7               //B channel for encoder of left motor
 
-#define ENCA_R 13              //A channel for encoder of right motor
+#define ENCA_R 3              //A channel for encoder of right motor
 #define ENCB_R 12              //B channel for encoder of right motor
 
-#define DIR_L 2
+#define DIR_L 8
 #define PWM_L 9
 
 #define DIR_R 4
