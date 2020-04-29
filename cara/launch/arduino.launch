@@ -2,6 +2,6 @@
 <launch>
   <node name="serial_node"          pkg="rosserial_python"  type="serial_node.py">
   <param name="serial_port"         type="string" value="/dev/ttyACM0"/>
-  <param name="serial_baudrate"     type="int"    value="57600"/>
+  <param name="serial_baudrate"     type="int"    value="115200"/>
   </node>
 </launch>

@@ -17,7 +17,7 @@
           --shutdown-timeout 3"/>
 
   <node name="rqt_robot_steering" pkg="rqt_robot_steering" type="rqt_robot_steering">
-    <param name="default_topic" value="cara_diff_drive_controller/cmd_vel"/>
+    <param name="/cmd_vel" value="cara_diff_drive_controller/cmd_vel"/>
   </node>
 
 

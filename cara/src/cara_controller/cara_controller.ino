@@ -7,6 +7,11 @@
 #include <geometry_msgs/Twist.h>
 #include <ros/time.h>
 
+//initialize the liquid crystal library
+//the first parameter is the I2C address
+// 16 cols, 2 rows -- I2C address located using I2C_scanner sketch
+LiquidCrystal_I2C lcd(0x20, 16, 2);
+
 //initializing all the variables
 #define LOOPTIME 100     //Looptime in millisecond
 const byte noCommLoopMax = 10;                //number of main loops the robot will execute without communication before stopping
@@ -14,17 +19,22 @@ unsigned int noCommLoops = 0;                 //main loop without communication 
 
 double speed_cmd_left2 = 0;
 
-#define ENCA_L 2            //A channel for encoder of left motor
-#define ENCB_L 7               //B channel for encoder of left motor
+#define DIR_L 11
+#define PWM_L 10
 
-#define ENCA_R 3              //A channel for encoder of right motor
-#define ENCB_R 12              //B channel for encoder of right motor
+#define DIR_R 9
+#define PWM_R 8
 
-#define DIR_L 8
-#define PWM_L 9
+#define ENC_A_L 19            //A channel for encoder of left motor
+#define ENC_B_L 18               //B channel for encoder of left motor
 
-#define DIR_R 4
-#define PWM_R 6
+#define ENC_A_R 2             //A channel for encoder of right motor
+#define ENC_B_R 3              //B channel for encoder of right motor
+
+
+
+long volatile countsL = 0;
+long volatile countsR = 0;
 
 unsigned long lastMilli = 0;
 
@@ -32,10 +42,10 @@ unsigned long lastMilli = 0;
 
 //--- Robot-specific constants ---
 const double radius = 0.06858;                 //Wheel radius, in m
-const double wheelbase = 0.4318;              //Wheelbase, in m
-const double encoder_cpr = 922;               //Encoder ticks or counts per rotation of output shaft
-const double speed_to_pwm_ratio = 0.00235;     //Ratio to convert speed (in m/s) to PWM value. It was obtained by plotting the wheel speed in relation to the PWM motor command (the value is the slope of the linear function).
-const double min_speed_cmd = 0.0882;           //(min_speed_cmd/speed_to_pwm_ratio) is the minimum command value needed for the motor to start moving. This value was obtained by plotting the wheel speed in relation to the PWM motor command (the value is the constant of the linear function).
+const double wheelbase = 0.4572;              //Wheelbase, in m
+const double cpr = 230.436;                   //Encoder ticks or counts per rotation of output shaft
+const double speed_to_pwm_ratio = 0.0035;     //Ratio to convert speed (in m/s) to PWM value. It was obtained by plotting the wheel speed in relation to the PWM motor command (the value is the slope of the linear function).
+const double min_speed_cmd = 0.3;             //(min_speed_cmd/speed_to_pwm_ratio) is the minimum command value needed for the motor to start moving. This value was obtained by plotting the wheel speed in relation to the PWM motor command (the value is the constant of the linear function).
 
 double speed_req = 0;                         //Desired linear speed for the robot, in m/s
 double angular_speed_req = 0;                 //Desired angular speed for the robot, in rad/s
@@ -48,14 +58,14 @@ double speed_req_right = 0;                   //Desired speed for right wheel in
 double speed_act_right = 0;                   //Actual speed for right wheel in m/s
 double speed_cmd_right = 0;                   //Command speed for right wheel in m/s
 
-const double max_speed = 0.4;                 //Max speed in m/s
+const double max_speed = 2.0;                 //Max speed in m/s
 
 int PWM_leftMotor = 0;                     //PWM command for left motor
 int PWM_rightMotor = 0;                    //PWM command for right motor
 
 // PID Parameters
-const double PID_left_param[] = { 0, 0, 0.1 }; //Respectively Kp, Ki and Kd for left motor PID
-const double PID_right_param[] = { 0, 0, 0.1 }; //Respectively Kp, Ki and Kd for right motor PID
+const double PID_left_param[] = { 0 , 0, 0 }; //Respectively Kp, Ki and Kd for left motor PID
+const double PID_right_param[] = { 0, 0, 0 }; //Respectively Kp, Ki and Kd for right motor PID
 
 volatile float pos_left = 0;       //Left motor encoder position
 volatile float pos_right = 0;      //Right motor encoder position
@@ -88,22 +98,47 @@ ros::Publisher speed_pub("speed", &speed_msg);                          //create
 void setup() {
 
   nh.initNode();                            //init ROS node
-  nh.getHardware()->setBaud(57600);         //set baud for ROS serial communication
+  nh.getHardware()->setBaud(115200);         //set baud for ROS serial communication
   nh.subscribe(cmd_vel);                    //suscribe to ROS topic for velocity commands
   nh.advertise(speed_pub);                  //prepare to publish speed in ROS topic
+  //initialize lcd screen
+
+  lcd.init();
+  // turn on the backlight
+  lcd.backlight();
+  lcd.setCursor(0,0);
+  lcd.print("Hi, I am Cara");
  
   
-
-  //setting motor speeds to zero
+ // set motor dir & pwm pins to output
   pinMode(DIR_L, OUTPUT);
   pinMode(DIR_R, OUTPUT);
+
   pinMode(PWM_L, OUTPUT);
   pinMode(PWM_R, OUTPUT);
 
+ // set motor speeds to 0
   analogWrite(PWM_L, 0);
   analogWrite(PWM_R, 0);
   digitalWrite(DIR_L, LOW);
   digitalWrite(DIR_R, LOW);
+
+
+  // Define the quad encoder for left motor
+  pinMode(ENC_A_L, INPUT_PULLUP);
+  pinMode(ENC_B_L, INPUT_PULLUP);
+
+  // Define the quad encoder for right motor
+  pinMode(ENC_A_R, INPUT_PULLUP);
+  pinMode(ENC_B_R, INPUT_PULLUP);
+
+
+  // Initialize hardware interrupts
+//  attachInterrupt(digitalPinToInterrupt(ENC_B_R), readEncR, RISING); //INT4 --> Pin 2
+  attachInterrupt(digitalPinToInterrupt(ENC_A_R), readEncR, RISING); //INT5 --> Pin 3
+//  attachInterrupt(digitalPinToInterrupt(ENC_B_L), readEncL, RISING);//INT2 --> Pin 19
+  attachInterrupt(digitalPinToInterrupt(ENC_A_L), readEncL, RISING); //INT3 --> Pin 18
+
 
   //setting PID parameters
   PID_leftMotor.SetSampleTime(95);
@@ -113,24 +148,13 @@ void setup() {
   PID_leftMotor.SetMode(AUTOMATIC);
   PID_rightMotor.SetMode(AUTOMATIC);
 
-  // Define the rotary encoder for left motor
-  pinMode(ENCA_L, INPUT);
-  pinMode(ENCB_L, INPUT);
-  digitalRead(ENCA_L);                // turn on pullup resistor
-  digitalRead(ENCB_L);
-  attachInterrupt(0, encoderLeftMotor, RISING);
-  // Define the rotary encoder for right motor
-  pinMode(ENCA_R, INPUT);
-  pinMode(ENCB_R, INPUT);
-  digitalRead(ENCA_R);                // turn on pullup resistor
-  digitalRead(ENCB_R);
-  attachInterrupt(1, encoderRightMotor, RISING);
 }
 
 //_________________________________________________________________________
 
 void loop() {
   nh.spinOnce();
+
   
   if((millis()-lastMilli) >= LOOPTIME)
   {                                                                           // enter timed loop
@@ -141,14 +165,14 @@ void loop() {
       speed_act_left = 0;
     }
     else {
-      speed_act_left=((pos_left/encoder_cpr)*2*PI)*(1000/LOOPTIME)*radius;           // calculate speed of left wheel
+      speed_act_left=((pos_left/cpr)*2*PI)*(1000/LOOPTIME)*radius;           // calculate speed of left wheel
     }
 
     if (abs(pos_right) < 5){                                                  //Avoid taking in account small disturbances
       speed_act_right = 0;
     }
     else {
-    speed_act_right=((pos_right/encoder_cpr)*2*PI)*(1000/LOOPTIME)*radius;          // calculate speed of right wheel
+    speed_act_right=((pos_right/cpr)*2*PI)*(1000/LOOPTIME)*radius;          // calculate speed of right wheel
     }
 
     pos_left = 0;
@@ -224,15 +248,23 @@ void publishSpeed(double time) {
 }
 
 //Left motor encoder counter
-void encoderLeftMotor() {
-  if (digitalRead(ENCA_L) == digitalRead(ENCB_L)) pos_left++;
-  else pos_left--;
+void readEncL() {
+  if (digitalRead(ENC_A_L) == digitalRead(ENC_B_L)) {
+    pos_left++;
+  }
+  else {
+    pos_left--;
+  }
 }
 
 //Right motor encoder counter
-void encoderRightMotor() {
-  if (digitalRead(ENCA_R) == digitalRead(ENCB_R)) pos_right--;
-  else pos_right++;
+void readEncR() {
+  if (digitalRead(ENC_A_R) == digitalRead(ENC_B_R)) {
+    pos_right++;
+  }
+  else {
+    pos_right--;
+  }
 }
 
 template <typename T> int sgn(T val) {
