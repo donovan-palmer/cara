@@ -35,7 +35,7 @@ int main(int argc, char** argv){
   ros::NodeHandle nh_private_("~");
 
   ros::Subscriber sub = n.subscribe("speed", 50, handle_speed);
-  ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 10);
+  ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 50);
   tf::TransformBroadcaster broadcaster;
 
   double rate = 10.0;
@@ -95,51 +95,42 @@ int main(int argc, char** argv){
     geometry_msgs::Quaternion empty_quat = tf::createQuaternionMsgFromYaw(0);
 
     if(publish_tf) {
-      geometry_msgs::TransformStamped c;
-      geometry_msgs::TransformStamped t;
-      geometry_msgs::TransformStamped k;
-      geometry_msgs::TransformStamped j;
 
-      c.header.stamp = ros::Time::now();
-      c.header.frame_id cara_controller;
-      c.child_frame_id = base_link;
-      c.transform.translation.x = x_pos;
-      c.transform.translation.y = y_pos;
-      c.transform.translation.z = 0.0;
-      c.transform.rotation = empty_quat;
-      c.header.stamp = current_time;
+      geometry_msgs::TransformStamped t;
+//      geometry_msgs::TransformStamped k;
+//      geometry_msgs::TransformStamped j;
+
 
       t.header.stamp = ros::Time::now();
-      t.header.frame_id odom;
-      t.child_frame_id = base_link;
+      t.header.frame_id = "odom";
+      t.child_frame_id = "base_link"";
       t.transform.translation.x = x_pos;
       t.transform.translation.y = y_pos;
       t.transform.translation.z = 0.0;
       t.transform.rotation = odom_quat;
       t.header.stamp = current_time;
 
-      k.header.stamp = ros::Time::now(); // update frame with most recent time stamp.  Every loop needs to broadcast the transform info!
-      k.header.frame_id = rplidar;
-      k.child_frame_id = base_link;
-      k.transform.translation.x = x_pos;
-      k.transform.translation.y = y_pos;
-      k.transform.translation.z = 0.0;
-      k.transform.rotation = empty_quat;
-      k.header.stamp = current_time;
+//      k.header.stamp = ros::Time::now(); // update frame with most recent time stamp.  Every loop needs to broadcast the transform info!
+//      k.header.frame_id = rplidar;
+//      k.child_frame_id = base_link;
+//      k.transform.translation.x = x_pos;
+//      k.transform.translation.y = y_pos;
+//      k.transform.translation.z = 0.0;
+//      k.transform.rotation = empty_quat;
+//      k.header.stamp = current_time;
+//
+//      j.header.stamp = ros::Time::now();
+//      j.header.frame_id = imu;
+//      j.child_frame_id = base_link;
+//      j.transform.translation.x = x_pos;
+//      j.transform.translation.y = y_pos;
+//      j.transform.translation.z = 0.0;
+//      j.transform.rotation = empty_quat;
+//      j.header.stamp = current_time;
 
-      j.header.stamp = ros::Time::now();
-      j.header.frame_id = imu;
-      j.child_frame_id = base_link;
-      j.transform.translation.x = x_pos;
-      j.transform.translation.y = y_pos;
-      j.transform.translation.z = 0.0;
-      j.transform.rotation = empty_quat;
-      j.header.stamp = current_time;
-
-      broadcaster.sendTransform(c);
       broadcaster.sendTransform(t);
-      broadcaster.sendTransform(k);
-      broadcaster.sendTransform(j);
+//      broadcaster.sendTransform(k);
+//      broadcaster.sendTransform(j);
     }
 
     nav_msgs::Odometry odom_msg;

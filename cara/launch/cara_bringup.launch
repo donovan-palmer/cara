@@ -4,11 +4,15 @@
     <!-- peripheral core launch (includes arduino, IMU, rplidar)-->
     <include file="$(find cara)/launch/peripheral_node.launch"/>
 
+	<!-- launches the visualization, publishes tf for joint states, and opens up gazebo-->
+
+    <include file="$(find cara_description)/launch/joint_controller.launch"/>
+
 
     <!-- cara controller (ensure that the arduino sketch cara_controller.ino has been uploaded to the MEGA 2560-->
 	<node name="cara_controller" pkg="cara" type="cara_controller">
 		<param name="publish_tf" value="true" />
-    		<param name="publish_rate" value="20.0" />
+			<param name="publish_rate" value="20" />
     		<param name="linear_scale_positive" value="1.025" />
     		<param name="linear_scale_negative" value="1.025" />
     		<param name="angular_scale_positive" value="1.078" />
@@ -16,7 +20,4 @@
 		<param name="angular_scale_accel" value="0.0" />
 	</node>
 
-	<!-- launches the visualization, publishes tf for joint states, and opens up gazebo-->
-
-    <include file="$(find cara_description)/launch/joint_controller.launch"/>
 </launch>

@@ -106,10 +106,9 @@
   <joint name="base_and_motorL" type="fixed">
     <parent link="base_link"/>
     <child link= "motorL"/>
-    <child link="wheelL"/>
   </joint>
 
-<link name="wheelL">
+  <link name="wheelL">
     <visual>
       <origin rpy="0 0 1.57079632679" xyz="0.02 0.255 0.055"/>
       <geometry>
@@ -122,25 +121,18 @@
     <parent link="motorL"/>
     <child link= "wheelL"/>
 	<axis xyz="0 1 0"/>
-	<limit effort="30" velocity="1.9"/>
   </joint>
 
   <transmission name="motor_L_trans">
     <type>transmission_interface/SimpleTransmission</type>
-    <actuator name="motorL">
-      <mechanicalReduction>1</mechanicalReduction>
-    </actuator>
     <joint name="motor_and_wheelL">
-      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
+    <actuator name="motorL">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>19</mechanicalReduction>
+    </actuator>
   </transmission>
-   <gazebo reference="wheelL">
-      <mu1 value="200.0"/>
-      <mu2 value="100.0"/>
-      <kp value="10000000.0" />
-      <kd value="1.0" />
-      <material>Gazebo/Grey</material>
-    </gazebo>
 
 
  <!-- =======================================================Wheel R====================================================================== -->
@@ -164,8 +156,8 @@
  <joint name="base_and_motorR" type="fixed">
     <parent link="base_link"/>
     <child link= "motorR"/>
-    <child link="wheelR"/>
-  </joint>
+
+ </joint>
 
 <link name="wheelR">
     <visual>
@@ -180,25 +172,19 @@
     <parent link="motorR"/>
     <child link= "wheelR"/>
 	<axis xyz="0 1 0"/>
-	<axis xyz="0 1 0"/>
-	<limit effort="30" velocity="1.9"/>
   </joint>
+
   <transmission name="motor_R_trans">
     <type>transmission_interface/SimpleTransmission</type>
-    <actuator name="motorR">
-      <mechanicalReduction>1</mechanicalReduction>
-    </actuator>
     <joint name="motor_and_wheelR">
-      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
+    <actuator name="motorR">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>19</mechanicalReduction>
+    </actuator>
   </transmission>
- <gazebo reference="wheelR">
-      <mu1 value="200.0"/>
-      <mu2 value="100.0"/>
-      <kp value="10000000.0" />
-      <kd value="1.0" />
-      <material>Gazebo/Grey</material>
-    </gazebo>
+
   <!-- ======================================================= Frame ====================================================================== -->
   <link name="frame">
     <visual>
@@ -369,7 +355,7 @@
     </visual>
   </link>
   <joint name="base_link_imu_frame" type="fixed">
-    <origin rpy="0 0 0" xyz="0.0 0 0.24"/>
+    <origin rpy="0 0 0" xyz="0.0 0 -0.24"/>
     <parent link="base_link"/>
     <child link="imu_frame"/>
   </joint>

@@ -64,8 +64,8 @@ int PWM_leftMotor = 0;                     //PWM command for left motor
 int PWM_rightMotor = 0;                    //PWM command for right motor
 
 // PID Parameters
-const double PID_left_param[] = { 0 , 0, 0 }; //Respectively Kp, Ki and Kd for left motor PID
-const double PID_right_param[] = { 0, 0, 0 }; //Respectively Kp, Ki and Kd for right motor PID
+const double PID_left_param[] = { 0.01 , 0.0, .03 }; //Respectively Kp, Ki and Kd for left motor PID
+const double PID_right_param[] = { 0.01 , 0.0, 0.03 }; //Respectively Kp, Ki and Kd for right motor PID
 
 volatile float pos_left = 0;       //Left motor encoder position
 volatile float pos_right = 0;      //Right motor encoder position
@@ -154,7 +154,7 @@ void setup() {
 
 void loop() {
   nh.spinOnce();
-
+ 
   
   if((millis()-lastMilli) >= LOOPTIME)
   {                                                                           // enter timed loop
@@ -165,6 +165,7 @@ void loop() {
       speed_act_left = 0;
     }
     else {
+      
       speed_act_left=((pos_left/cpr)*2*PI)*(1000/LOOPTIME)*radius;           // calculate speed of left wheel
     }
 

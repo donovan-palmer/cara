@@ -7,17 +7,21 @@
   <include file="$(find cara_description)/launch/gazebo.launch"/>
   <rosparam command="load"
             file="$(find cara_description)/config/joints.yaml"
-            ns="cara_joint_state_controller" />
+            ns="joint_state_publisher" />
   <rosparam command="load"
             file="$(find cara_description)/config/diff_drive.yaml"
-            ns="cara_diff_drive_controller"/>
+            ns="cara_controller"/>
 
-  <node name="cara_controller_spawner" pkg="controller_manager" type="spawner"
-    args="cara_joint_state_controller
-          --shutdown-timeout 3"/>
+  <node name="controller_spawner" pkg="controller_manager" type="spawner"
+    args="joint_state_controller motor_and_wheelL_effort_controller motor_and_wheelR_effort_controller --shutdown-timeout 3"/>
+
+  <node pkg="joint_state_publisher" type="joint_state_publisher"  name="joint_state_publisher"/>
+
+
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
 
   <node name="rqt_robot_steering" pkg="rqt_robot_steering" type="rqt_robot_steering">
-    <param name="/cmd_vel" value="cara_diff_drive_controller/cmd_vel"/>
+    <param name="/cmd_vel" value="/cmd_vel"/>
   </node>
 
 
