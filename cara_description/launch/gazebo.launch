@@ -8,18 +8,18 @@
   <arg name="debug" default="false"/>
   <arg name="robot_description" default="$(find cara_description)/urdf/cara.urdf"/>
 
-<!--  &lt;!&ndash; We resume the logic in empty_world.launch, changing only the name of the world to be launched &ndash;&gt;-->
-<!--  <include file="$(find gazebo_ros)/launch/empty_world.launch">-->
-<!--    <arg name="debug" value="$(arg debug)" />-->
-<!--    <arg name="gui" value="$(arg gui)" />-->
-<!--    <arg name="paused" value="$(arg paused)"/>-->
-<!--    <arg name="use_sim_time" value="$(arg use_sim_time)"/>-->
-<!--    <arg name="headless" value="$(arg headless)"/>-->
-<!--  </include>-->
+  <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="debug" value="$(arg debug)" />
+    <arg name="gui" value="$(arg gui)" />
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    <arg name="headless" value="$(arg headless)"/>
+  </include>
 
   <param name="robot_description" command="$(find xacro)/xacro.py '$(find cara_description)/urdf/cara.urdf'" />
-  <!-- push robot_description to factory and spawn robot in gazebo -->
-<!--  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"-->
-<!--        args="-urdf -model cara -param robot_description" respawn="false" output="screen" />-->
+   push robot_description to factory and spawn robot in gazebo
+  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"
+        args="-urdf -model cara -param robot_description" respawn="false" output="screen" />
 
 </launch>
